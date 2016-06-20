@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	. "github.com/cf-platform-eng/splunk-firehose-nozzle/auth"
+	. "github.com/cf-platform-eng/firehose-nozzle/auth"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

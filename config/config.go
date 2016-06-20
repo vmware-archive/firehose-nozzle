@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+
+	"github.com/cloudfoundry/sonde-go/events"
 )
 
 type Config struct {
@@ -14,6 +17,12 @@ type Config struct {
 	TrafficControllerURL   string
 	FirehoseSubscriptionID string
 	InsecureSkipVerify     bool
+	SelectedEvents         []events.Envelope_EventType
+}
+
+var defaultEvents = []events.Envelope_EventType{
+	events.Envelope_ValueMetric,
+	events.Envelope_CounterEvent,
 }
 
 func Parse() (*Config, error) {
@@ -28,13 +37,18 @@ func Parse() (*Config, error) {
 	}
 
 	for name, dest := range envVars {
-		err := getRequiredStringEnv(name, dest)
-		if err != nil {
-			return nil, err
+		SetFromStringEnv(name, dest)
+		if *dest == "" {
+			return nil, errors.New(fmt.Sprintf("[%s] is required", name))
 		}
 	}
 
-	err := getBoolEnv("NOZZLE_INSECURE_SKIP_VERIFY", &config.InsecureSkipVerify)
+	err := SetFromBoolEnv("NOZZLE_INSECURE_SKIP_VERIFY", &config.InsecureSkipVerify)
+	if err != nil {
+		return nil, err
+	}
+
+	err = parseSelectedEvents(&config.SelectedEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -42,17 +56,12 @@ func Parse() (*Config, error) {
 	return config, nil
 }
 
-func getRequiredStringEnv(name string, value *string) error {
+func SetFromStringEnv(name string, value *string) {
 	envValue := os.Getenv(name)
-	if envValue == "" {
-		return errors.New(fmt.Sprintf("[%s] is required", name))
-	}
-
 	*value = envValue
-	return nil
 }
 
-func getBoolEnv(name string, value *bool) error {
+func SetFromBoolEnv(name string, value *bool) error {
 	envValue := os.Getenv(name)
 	if envValue == "" {
 		return nil
@@ -64,5 +73,27 @@ func getBoolEnv(name string, value *bool) error {
 	}
 
 	*value = parsedEnvValue
+	return nil
+}
+
+func parseSelectedEvents(value *[]events.Envelope_EventType) error {
+	envValue := os.Getenv("NOZZLE_SELECTED_EVENTS")
+	if envValue == "" {
+		*value = defaultEvents
+	} else {
+		selectedEvents := []events.Envelope_EventType{}
+
+		for _, envValueSplit := range strings.Split(envValue, ",") {
+			envValueSlitTrimmed := strings.TrimSpace(envValueSplit)
+			val, found := events.Envelope_EventType_value[envValueSlitTrimmed]
+			if found {
+				selectedEvents = append(selectedEvents, events.Envelope_EventType(val))
+			} else {
+				return errors.New(fmt.Sprintf("[%s] is required", envValueSlitTrimmed))
+			}
+		}
+		*value = selectedEvents
+	}
+
 	return nil
 }

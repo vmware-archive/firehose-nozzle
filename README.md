@@ -1,4 +1,4 @@
-## PoC Splunk Nozzle
+## Firehose Nozzle
 
 ### Setup
 
@@ -13,7 +13,7 @@ For example:
 properties:
   uaa:
     clients:
-      splunk-firehose-nozzle:
+      firehose-nozzle:
         access-token-validity: 1209600
         authorized-grant-types: authorization_code,client_credentials,refresh_token
         override: true
@@ -24,17 +24,28 @@ properties:
 
 ### Development
 
-Copy `scripts/dev.sh.template` to `scripts/dev.sh.template` and supply expected values.
+For development against
+[bosh-lite](https://github.com/cloudfoundry/bosh-lite),
+copy `scripts/dev.sh.template` to `scripts/dev.sh.template` and supply missing values.
 
+### Reminder/Todo
 
-### Notes/todo
-
-* https://github.com/cloudfoundry-incubator/cf-lager
-* https://github.com/pivotal-golang/lager
-
-* https://github.com/cloudfoundry-incubator/datadog-firehose-nozzle
-* https://github.com/cloudfoundry-incubator/datadog-firehose-nozzle-release
-* https://github.com/cloudfoundry-community/firehose-to-syslog
+- [ ] Timeouts connecting to firehose (had bosh-lite shut down & took ages to crash / stop)
+- [ ] Retries? Or rely on Firehose library
+- [ ] Never able to generate `events.Envelope_Error` in real cf deploy
 
 For release repo, add errand to setup uaa client, see:
 https://github.com/cloudfoundry-community/admin-ui-boshrelease/tree/master/jobs/register_admin_ui
+
+### References
+
+Other nozzles
+* https://github.com/cloudfoundry-incubator/datadog-firehose-nozzle
+* https://github.com/cloudfoundry-incubator/datadog-firehose-nozzle-release
+* https://github.com/cloudfoundry-community/firehose-to-syslog
+* https://github.com/cloudfoundry/firehose-plugin
+
+General
+* https://github.com/cloudfoundry-incubator/cf-lager
+* https://github.com/pivotal-golang/lager
+* https://github.com/cloudfoundry/dropsonde-protocol/tree/master/events
