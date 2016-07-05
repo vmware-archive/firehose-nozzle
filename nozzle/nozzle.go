@@ -73,7 +73,10 @@ func (s *ForwardingNozzle) Run(flushWindow time.Duration) error {
 		case <-ticker:
 			if len(s.batch) > 0 {
 				s.logger.Info(fmt.Sprintf("Posting %d events", len(s.batch)))
-				s.client.PostBatch(s.batch)
+				err := s.client.PostBatch(s.batch)
+				if err != nil {
+					return err
+				}
 				s.batch = make([]interface{}, 0)
 			} else {
 				s.logger.Info(fmt.Sprintf("No events to post"))

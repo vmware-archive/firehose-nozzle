@@ -34,6 +34,19 @@ var _ = Describe("Nozzle", func() {
 		eventType     events.Envelope_EventType
 	)
 
+	var newEvent = func(e events.Envelope_EventType) *events.Envelope {
+		newEventType := e
+		return &events.Envelope{
+			Origin:     &origin,
+			EventType:  &newEventType,
+			Timestamp:  &timestampNano,
+			Deployment: &deployment,
+			Job:        &job,
+			Index:      &index,
+			Ip:         &ip,
+		}
+	}
+
 	BeforeEach(func() {
 		logger = lager.NewLogger("test")
 		eventChannel = make(chan *events.Envelope)
@@ -56,7 +69,9 @@ var _ = Describe("Nozzle", func() {
 		}
 		mockEventSerializer = NewMockEventSerializer()
 
-		nozzle = NewForwarder(mockClient, mockEventSerializer, allEventTypes, eventChannel, errorChannel, logger)
+		nozzle = NewForwarder(
+			mockClient, mockEventSerializer, allEventTypes, eventChannel, errorChannel, logger,
+		)
 
 		timestampNano = 1467040874046121775
 		deployment = "cf-warden"
@@ -82,20 +97,33 @@ var _ = Describe("Nozzle", func() {
 		Expect(err).To(Equal(errors.New("Fail")))
 	})
 
-	Context("Filters events", func() {
-		var newEvent = func(e events.Envelope_EventType) *events.Envelope {
-			newEventType := e
-			return &events.Envelope{
-				Origin:     &origin,
-				EventType:  &newEventType,
-				Timestamp:  &timestampNano,
-				Deployment: &deployment,
-				Job:        &job,
-				Index:      &index,
-				Ip:         &ip,
-			}
+	It("returns error when client fails", func() {
+		mockClient := &MockClient{
+			PostBatchFn: func(events []interface{}) error {
+				return errors.New("failed to post")
+			},
 		}
 
+		nozzle = NewForwarder(
+			mockClient, mockEventSerializer, allEventTypes, eventChannel, errorChannel, logger,
+		)
+
+		var runErr error
+		go func() {
+			runErr = nozzle.Run(time.Millisecond * 100)
+		}()
+
+		envelope = newEvent(events.Envelope_HttpStartStop)
+		envelope.HttpStartStop = &events.HttpStartStop{}
+		eventChannel <- envelope
+
+		Eventually(func() error {
+			return runErr
+		}).ShouldNot(BeNil())
+		Expect(runErr.Error()).To(Equal("failed to post"))
+	})
+
+	Context("Filters events", func() {
 		var sendAllEventTypes = func() {
 			envelope = newEvent(events.Envelope_HttpStartStop)
 			envelope.HttpStartStop = &events.HttpStartStop{}
