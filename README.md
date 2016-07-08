@@ -31,8 +31,8 @@ copy `scripts/dev.sh.template` to `scripts/dev.sh.template` and supply missing v
 ### Reminder/Todo
 
 - [ ] Timeouts connecting to firehose (had bosh-lite shut down & took ages to crash / stop)
-- [ ] Retries? Or rely on Firehose library
 - [ ] Never able to generate `events.Envelope_Error` in real cf deploy
+- [ ] Vendor dependencies
 
 For release repo, add errand to setup uaa client, see:
 https://github.com/cloudfoundry-community/admin-ui-boshrelease/tree/master/jobs/register_admin_ui

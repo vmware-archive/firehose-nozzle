@@ -1,6 +1,7 @@
 package nozzle
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -66,10 +67,16 @@ func (s *ForwardingNozzle) Run(flushWindow time.Duration) error {
 	ticker := time.Tick(flushWindow)
 	for {
 		select {
-		case err := <-s.errorsChannel:
-			return err
-		case event := <-s.eventsChannel:
+		case event, ok := <-s.eventsChannel:
+			if !ok {
+				return errors.New("eventsChannel channel closed")
+			}
 			s.handleEvent(event)
+		case err, ok := <-s.errorsChannel:
+			if !ok {
+				return errors.New("errorsChannel closed")
+			}
+			s.handleError(err)
 		case <-ticker:
 			if len(s.batch) > 0 {
 				s.logger.Info(fmt.Sprintf("Posting %d events", len(s.batch)))
@@ -113,4 +120,8 @@ func (s *ForwardingNozzle) handleEvent(envelope *events.Envelope) {
 	if event != nil {
 		s.batch = append(s.batch, event)
 	}
+}
+
+func (s *ForwardingNozzle) handleError(err error) {
+	s.logger.Error("Error from firehose", err)
 }

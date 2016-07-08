@@ -1,6 +1,7 @@
 package nozzle_test
 
 import (
+	"bytes"
 	"errors"
 	"time"
 
@@ -88,13 +89,49 @@ var _ = Describe("Nozzle", func() {
 		}
 	})
 
-	It("returns error on error channel", func() {
+	It("logs when error on channel", func() {
+		buff := &bytes.Buffer{}
+		logger.RegisterSink(lager.NewWriterSink(buff, lager.ERROR))
+
 		go func() {
 			errorChannel <- errors.New("Fail")
 		}()
-		err := nozzle.Run(time.Millisecond)
+		var runErr error
+		go func() {
+			runErr = nozzle.Run(time.Millisecond * 100)
+		}()
 
-		Expect(err).To(Equal(errors.New("Fail")))
+		Consistently(func() error {
+			return runErr
+		}).Should(BeNil())
+		Expect(buff.Len()).To(BeNumerically(">", 0))
+		Expect(buff.String()).To(ContainSubstring("firehose"))
+	})
+
+	It("returns error when error channel closed", func() {
+		var runErr error
+		go func() {
+			runErr = nozzle.Run(time.Millisecond * 100)
+		}()
+		close(errorChannel)
+
+		Eventually(func() error {
+			return runErr
+		}).ShouldNot(BeNil())
+		Expect(runErr.Error()).To(ContainSubstring("closed"))
+	})
+
+	It("returns error when event channel closed", func() {
+		var runErr error
+		go func() {
+			runErr = nozzle.Run(time.Millisecond * 100)
+		}()
+		close(eventChannel)
+
+		Eventually(func() error {
+			return runErr
+		}).ShouldNot(BeNil())
+		Expect(runErr.Error()).To(ContainSubstring("closed"))
 	})
 
 	It("returns error when client fails", func() {
