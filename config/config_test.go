@@ -37,7 +37,7 @@ var _ = Describe("config", func() {
 	})
 
 	DescribeTable("error on missing required values", func(envName string) {
-		os.Setenv(envName, "")
+		os.Unsetenv(envName)
 
 		_, err := Parse()
 
@@ -94,7 +94,7 @@ var _ = Describe("config", func() {
 	})
 
 	It("defaults insecureSkipVerify to false", func() {
-		os.Setenv("NOZZLE_INSECURE_SKIP_VERIFY", "")
+		os.Unsetenv("NOZZLE_INSECURE_SKIP_VERIFY")
 		config, err := Parse()
 
 		Expect(err).To(BeNil())

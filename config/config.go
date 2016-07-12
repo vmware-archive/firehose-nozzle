@@ -4,20 +4,21 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/cloudfoundry/sonde-go/events"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Config struct {
-	UAAURL                 string
-	Username               string
-	Password               string
-	TrafficControllerURL   string
-	FirehoseSubscriptionID string
-	InsecureSkipVerify     bool
-	SelectedEvents         []events.Envelope_EventType
+	UAAURL                 string `required:"true" envconfig:"uaa_url"`
+	Username               string `required:"true"`
+	Password               string `required:"true"`
+	TrafficControllerURL   string `required:"true" envconfig:"traffic_controller_url"`
+	FirehoseSubscriptionID string `required:"true" envconfig:"firehose_subscription_id"`
+	InsecureSkipVerify     bool   `default:"false" envconfig:"insecure_skip_verify"`
+
+	SelectedEvents []events.Envelope_EventType `ignored:"true"`
 }
 
 var defaultEvents = []events.Envelope_EventType{
@@ -28,58 +29,24 @@ var defaultEvents = []events.Envelope_EventType{
 func Parse() (*Config, error) {
 	config := &Config{}
 
-	envVars := map[string]*string{
-		"NOZZLE_UAA_URL":                  &config.UAAURL,
-		"NOZZLE_USERNAME":                 &config.Username,
-		"NOZZLE_PASSWORD":                 &config.Password,
-		"NOZZLE_TRAFFIC_CONTROLLER_URL":   &config.TrafficControllerURL,
-		"NOZZLE_FIREHOSE_SUBSCRIPTION_ID": &config.FirehoseSubscriptionID,
-	}
-
-	for name, dest := range envVars {
-		SetFromStringEnv(name, dest)
-		if *dest == "" {
-			return nil, errors.New(fmt.Sprintf("[%s] is required", name))
-		}
-	}
-
-	err := SetFromBoolEnv("NOZZLE_INSECURE_SKIP_VERIFY", &config.InsecureSkipVerify)
+	err := envconfig.Process("nozzle", config)
 	if err != nil {
 		return nil, err
 	}
 
-	err = parseSelectedEvents(&config.SelectedEvents)
+	selectedEvents, err := parseSelectedEvents()
 	if err != nil {
 		return nil, err
 	}
+	config.SelectedEvents = selectedEvents
 
 	return config, nil
 }
 
-func SetFromStringEnv(name string, value *string) {
-	envValue := os.Getenv(name)
-	*value = envValue
-}
-
-func SetFromBoolEnv(name string, value *bool) error {
-	envValue := os.Getenv(name)
-	if envValue == "" {
-		return nil
-	}
-
-	parsedEnvValue, err := strconv.ParseBool(envValue)
-	if err != nil {
-		return err
-	}
-
-	*value = parsedEnvValue
-	return nil
-}
-
-func parseSelectedEvents(value *[]events.Envelope_EventType) error {
+func parseSelectedEvents() ([]events.Envelope_EventType, error) {
 	envValue := os.Getenv("NOZZLE_SELECTED_EVENTS")
 	if envValue == "" {
-		*value = defaultEvents
+		return defaultEvents, nil
 	} else {
 		selectedEvents := []events.Envelope_EventType{}
 
@@ -89,11 +56,9 @@ func parseSelectedEvents(value *[]events.Envelope_EventType) error {
 			if found {
 				selectedEvents = append(selectedEvents, events.Envelope_EventType(val))
 			} else {
-				return errors.New(fmt.Sprintf("[%s] is required", envValueSlitTrimmed))
+				return nil, errors.New(fmt.Sprintf("[%s] is not a valid event type", envValueSlitTrimmed))
 			}
 		}
-		*value = selectedEvents
+		return selectedEvents, nil
 	}
-
-	return nil
 }

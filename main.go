@@ -40,7 +40,7 @@ func main() {
 	events, errors := consumer.Firehose(config.FirehoseSubscriptionID, token)
 
 	writerEventSerializer := writernozzle.NewWriterEventSerializer()
-	writerClient := writernozzle.NewWriterClient(os.Stderr)
+	writerClient := writernozzle.NewWriterClient(os.Stdout)
 	logger.Info(fmt.Sprintf("Forwarding events: %s", config.SelectedEvents))
 	forwarder := nozzle.NewForwarder(
 		writerClient, writerEventSerializer,
