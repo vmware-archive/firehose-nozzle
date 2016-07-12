@@ -44,6 +44,8 @@ Other nozzles
 * https://github.com/cloudfoundry-incubator/datadog-firehose-nozzle-release
 * https://github.com/cloudfoundry-community/firehose-to-syslog
 * https://github.com/cloudfoundry/firehose-plugin
+* https://github.com/rakutentech/kafka-firehose-nozzle
+* https://github.com/pivotal-cf/graphite-nozzle
 
 General
 * https://github.com/cloudfoundry-incubator/cf-lager
