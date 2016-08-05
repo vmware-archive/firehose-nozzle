@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/cloudfoundry/sonde-go/events"
-	"github.com/pivotal-golang/lager"
+	"code.cloudfoundry.org/lager"
 
 	. "github.com/cf-platform-eng/firehose-nozzle/nozzle"
 )

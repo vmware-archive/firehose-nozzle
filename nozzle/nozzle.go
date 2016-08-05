@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/cloudfoundry/sonde-go/events"
-	"github.com/pivotal-golang/lager"
+	"code.cloudfoundry.org/lager"
 )
 
 type Nozzle interface {
@@ -86,7 +86,7 @@ func (s *ForwardingNozzle) Run(flushWindow time.Duration) error {
 				}
 				s.batch = make([]interface{}, 0)
 			} else {
-				s.logger.Info(fmt.Sprintf("No events to post"))
+				s.logger.Info("No events to post")
 			}
 		}
 	}

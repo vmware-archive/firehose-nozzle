@@ -1,0 +1,12 @@
+package: github.com/cf-platform-eng/firehose-nozzle
+import:
+- package: code.cloudfoundry.org/cflager
+- package: code.cloudfoundry.org/lager
+- package: github.com/cloudfoundry-incubator/uaago
+- package: github.com/cloudfoundry/noaa
+  subpackages:
+  - consumer
+- package: github.com/cloudfoundry/sonde-go
+  subpackages:
+  - events
+- package: github.com/kelseyhightower/envconfig

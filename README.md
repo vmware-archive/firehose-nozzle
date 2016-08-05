@@ -48,6 +48,6 @@ Other nozzles
 * https://github.com/pivotal-cf/graphite-nozzle
 
 General
-* https://github.com/cloudfoundry-incubator/cf-lager
-* https://github.com/pivotal-golang/lager
+* https://code.cloudfoundry.org/cflager
+* https://code.cloudfoundry.org/lager
 * https://github.com/cloudfoundry/dropsonde-protocol/tree/master/events

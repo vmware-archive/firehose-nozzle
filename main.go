@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cloudfoundry-incubator/cf-lager"
+	"code.cloudfoundry.org/cflager"
 	"github.com/cloudfoundry/noaa/consumer"
 
 	"github.com/cf-platform-eng/firehose-nozzle/auth"
@@ -17,10 +17,10 @@ import (
 )
 
 func main() {
-	cf_lager.AddFlags(flag.CommandLine)
+	cflager.AddFlags(flag.CommandLine)
 	flag.Parse()
 
-	logger, _ := cf_lager.New("firehose-logger")
+	logger, _ := cflager.New("firehose-logger")
 	logger.Info("Running firehose-nozzle")
 
 	config, err := config.Parse()
