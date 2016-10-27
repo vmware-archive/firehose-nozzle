@@ -1,7 +1,5 @@
 package: github.com/cf-platform-eng/firehose-nozzle
 import:
-- package: code.cloudfoundry.org/cflager
-- package: code.cloudfoundry.org/lager
 - package: github.com/cloudfoundry-incubator/uaago
 - package: github.com/cloudfoundry/noaa
   subpackages:
@@ -10,3 +8,8 @@ import:
   subpackages:
   - events
 - package: github.com/kelseyhightower/envconfig
+testImport:
+- package: github.com/onsi/ginkgo
+  subpackages:
+  - extensions/table
+- package: github.com/onsi/gomega
