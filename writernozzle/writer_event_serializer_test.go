@@ -52,6 +52,6 @@ var _ = Describe("WriterClient", func() {
 
 		serialized := serializer.BuildErrorEvent(envelope)
 
-		Expect(fmt.Sprintf("%+v\n", envelope)).To(Equal(string(serialized.([]byte))))
+		Expect(fmt.Sprintf("%+v\n\n", envelope)).To(Equal(string(serialized.([]byte))))
 	})
 })
