@@ -16,7 +16,7 @@ type Config struct {
 	Password               string `required:"true"`
 	TrafficControllerURL   string `required:"true" envconfig:"traffic_controller_url"`
 	FirehoseSubscriptionID string `required:"true" envconfig:"firehose_subscription_id"`
-	InsecureSkipVerify     bool   `default:"false" envconfig:"insecure_skip_verify"`
+	SkipSSL                bool   `default:"false" envconfig:"skip_ssl"`
 
 	SelectedEvents []events.Envelope_EventType `ignored:"true"`
 }

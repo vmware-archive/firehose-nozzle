@@ -27,7 +27,7 @@ var _ = Describe("config", func() {
 		os.Setenv("NOZZLE_PASSWORD", passwordValue)
 		os.Setenv("NOZZLE_TRAFFIC_CONTROLLER_URL", trafficControllerURLValue)
 		os.Setenv("NOZZLE_FIREHOSE_SUBSCRIPTION_ID", firehoseSubscriptionIDValue)
-		os.Setenv("NOZZLE_INSECURE_SKIP_VERIFY", "true")
+		os.Setenv("NOZZLE_SKIP_SSL", "true")
 	})
 
 	It("returns config when all values present", func() {
@@ -90,15 +90,15 @@ var _ = Describe("config", func() {
 		config, err := Parse()
 
 		Expect(err).To(BeNil())
-		Expect(config.InsecureSkipVerify).To(BeTrue())
+		Expect(config.SkipSSL).To(BeTrue())
 	})
 
-	It("defaults insecureSkipVerify to false", func() {
-		os.Unsetenv("NOZZLE_INSECURE_SKIP_VERIFY")
+	It("defaults skipSSL to false", func() {
+		os.Unsetenv("NOZZLE_SKIP_SSL")
 		config, err := Parse()
 
 		Expect(err).To(BeNil())
-		Expect(config.InsecureSkipVerify).To(BeFalse())
+		Expect(config.SkipSSL).To(BeFalse())
 	})
 
 	Context("selected events", func() {

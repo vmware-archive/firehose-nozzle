@@ -35,7 +35,7 @@ func main() {
 	}
 
 	consumer := consumer.New(config.TrafficControllerURL, &tls.Config{
-		InsecureSkipVerify: config.InsecureSkipVerify,
+		InsecureSkipVerify: config.SkipSSL,
 	}, nil)
 	events, errors := consumer.Firehose(config.FirehoseSubscriptionID, token)
 
