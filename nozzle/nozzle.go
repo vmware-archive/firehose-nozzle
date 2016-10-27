@@ -2,11 +2,10 @@ package nozzle
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/cloudfoundry/sonde-go/events"
-	"code.cloudfoundry.org/lager"
 )
 
 type Nozzle interface {
@@ -20,7 +19,7 @@ type ForwardingNozzle struct {
 	eventsChannel      <-chan *events.Envelope
 	errorsChannel      <-chan error
 	batch              []interface{}
-	logger             lager.Logger
+	logger             *log.Logger
 }
 
 type Client interface {
@@ -36,7 +35,7 @@ type EventSerializer interface {
 	BuildContainerEvent(event *events.Envelope) interface{}
 }
 
-func NewForwarder(clientlient Client, eventSerializer EventSerializer, selectedEventTypes []events.Envelope_EventType, eventsChannel <-chan *events.Envelope, errors <-chan error, logger lager.Logger) Nozzle {
+func NewForwarder(clientlient Client, eventSerializer EventSerializer, selectedEventTypes []events.Envelope_EventType, eventsChannel <-chan *events.Envelope, errors <-chan error, logger *log.Logger) Nozzle {
 	nozzle := &ForwardingNozzle{
 		client:          clientlient,
 		eventSerializer: eventSerializer,
@@ -79,14 +78,14 @@ func (s *ForwardingNozzle) Run(flushWindow time.Duration) error {
 			s.handleError(err)
 		case <-ticker:
 			if len(s.batch) > 0 {
-				s.logger.Info(fmt.Sprintf("Posting %d events", len(s.batch)))
+				s.logger.Printf("Posting %d events", len(s.batch))
 				err := s.client.PostBatch(s.batch)
 				if err != nil {
 					return err
 				}
 				s.batch = make([]interface{}, 0)
 			} else {
-				s.logger.Info("No events to post")
+				s.logger.Print("No events to post")
 			}
 		}
 	}
@@ -123,5 +122,5 @@ func (s *ForwardingNozzle) handleEvent(envelope *events.Envelope) {
 }
 
 func (s *ForwardingNozzle) handleError(err error) {
-	s.logger.Error("Error from firehose", err)
+	s.logger.Printf("Error from firehose", err)
 }

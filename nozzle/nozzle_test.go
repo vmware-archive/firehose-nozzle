@@ -3,21 +3,22 @@ package nozzle_test
 import (
 	"bytes"
 	"errors"
+	"log"
 	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"github.com/cloudfoundry/sonde-go/events"
-	"code.cloudfoundry.org/lager"
 
 	. "github.com/cf-platform-eng/firehose-nozzle/nozzle"
 )
 
 var _ = Describe("Nozzle", func() {
 	var (
-		nozzle Nozzle
-		logger lager.Logger
+		nozzle    Nozzle
+		logger    *log.Logger
+		logBuffer *bytes.Buffer
 
 		allEventTypes       []events.Envelope_EventType
 		eventChannel        chan *events.Envelope
@@ -49,7 +50,8 @@ var _ = Describe("Nozzle", func() {
 	}
 
 	BeforeEach(func() {
-		logger = lager.NewLogger("test")
+		logBuffer = &bytes.Buffer{}
+		logger = log.New(logBuffer, "", 0)
 		eventChannel = make(chan *events.Envelope)
 		errorChannel = make(chan error, 1)
 		allEventTypes = []events.Envelope_EventType{
@@ -90,9 +92,6 @@ var _ = Describe("Nozzle", func() {
 	})
 
 	It("logs when error on channel", func() {
-		buff := &bytes.Buffer{}
-		logger.RegisterSink(lager.NewWriterSink(buff, lager.ERROR))
-
 		go func() {
 			errorChannel <- errors.New("Fail")
 		}()
@@ -104,8 +103,8 @@ var _ = Describe("Nozzle", func() {
 		Consistently(func() error {
 			return runErr
 		}).Should(BeNil())
-		Expect(buff.Len()).To(BeNumerically(">", 0))
-		Expect(buff.String()).To(ContainSubstring("firehose"))
+		Expect(logBuffer.Len()).To(BeNumerically(">", 0))
+		Expect(logBuffer.String()).To(ContainSubstring("firehose"))
 	})
 
 	It("returns error when error channel closed", func() {

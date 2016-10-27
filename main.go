@@ -2,12 +2,10 @@ package main
 
 import (
 	"crypto/tls"
-	"flag"
-	"fmt"
+	"log"
 	"os"
 	"time"
 
-	"code.cloudfoundry.org/cflager"
 	"github.com/cloudfoundry/noaa/consumer"
 
 	"github.com/cf-platform-eng/firehose-nozzle/auth"
@@ -17,11 +15,7 @@ import (
 )
 
 func main() {
-	cflager.AddFlags(flag.CommandLine)
-	flag.Parse()
-
-	logger, _ := cflager.New("firehose-logger")
-	logger.Info("Running firehose-nozzle")
+	logger := log.New(os.Stdout, ">>> ", 0)
 
 	config, err := config.Parse()
 	if err != nil {
@@ -41,7 +35,7 @@ func main() {
 
 	writerEventSerializer := writernozzle.NewWriterEventSerializer()
 	writerClient := writernozzle.NewWriterClient(os.Stdout)
-	logger.Info(fmt.Sprintf("Forwarding events: %s", config.SelectedEvents))
+	logger.Printf("Forwarding events: %s", config.SelectedEvents)
 	forwarder := nozzle.NewForwarder(
 		writerClient, writerEventSerializer,
 		config.SelectedEvents, events, errors, logger,
