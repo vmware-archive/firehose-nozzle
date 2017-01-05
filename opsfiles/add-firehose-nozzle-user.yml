@@ -1,0 +1,14 @@
+---
+- type: replace
+  path: /variables/name=uaa_clients_firehose-nozzle_secret?/type
+  value: password
+
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients/firehose-nozzle?
+  value:
+    access-token-validity: 1209600
+    authorized-grant-types: authorization_code,client_credentials,refresh_token
+    override: true
+    secret: "((uaa_clients_firehose-nozzle_secret))"
+    scope: openid,oauth.approvals,doppler.firehose
+    authorities: oauth.login,doppler.firehose

@@ -26,6 +26,15 @@ properties:
         authorities: oauth.login,doppler.firehose
 ```
 
+One simple way to add this user is to use
+[BOSH CLI v2](https://bosh.io/docs/cli-v2.html) to apply the
+[provided opsfile](opsfiles/add-firehose-nozzle-user.yml) to your
+Cloud Foundry deployment with `-o path/to/add-firehose-nozzle-user.yml`.
+See the [cf-deployment repository](https://github.com/cloudfoundry/cf-deployment)
+for further information.
+Note these technologies are in active development, but we have
+successfully used this method.
+
 ### Development
 
 For development against
