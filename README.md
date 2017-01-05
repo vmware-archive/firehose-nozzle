@@ -1,6 +1,10 @@
 ## Firehose Nozzle
 
 ### Setup
+This code uses [Glide](https://glide.sh/) for dependency management.
+After you [install Glide](https://glide.sh/), run `glide install` to
+install the Firehose Nozzle dependencies. After that, a `go install`
+should build and install the `firehose-nozzle` executable.
 
 The Nozzle requires a uaa user with the scope `doppler.firehose`. One way to create this user
 is to add them via the
