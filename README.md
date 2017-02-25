@@ -6,8 +6,17 @@ After you [install Glide](https://glide.sh/), run `glide install` to
 install the Firehose Nozzle dependencies. After that, a `go install`
 should build and install the `firehose-nozzle` executable.
 
-The Nozzle requires a uaa user with the scope `doppler.firehose`. One way to create this user
-is to add them via the
+There are two options for creating credentials that can talk to the API:
+* API users
+* UAA Client
+
+#### API User
+
+todo
+
+#### UAA Client
+The UAA client requires the scope `doppler.firehose`. One way to create this client
+is to add it via the
 [uaa.clients](https://github.com/cloudfoundry/uaa-release/blob/master/jobs/uaa/spec)
 property in the deployment manifest.
 

@@ -11,7 +11,8 @@ import (
 )
 
 type Config struct {
-	UAAURL                 string `required:"true" envconfig:"uaa_url"`
+	APIURL                 string `envconfig:"api_url"`
+	UAAURL                 string `envconfig:"uaa_url"`
 	Username               string `required:"true"`
 	Password               string `required:"true"`
 	TrafficControllerURL   string `required:"true" envconfig:"traffic_controller_url"`

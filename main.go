@@ -22,7 +22,7 @@ func main() {
 		logger.Fatal("Unable to build config from environment", err)
 	}
 
-	fetcher := auth.NewUAATokenFetcher(config.UAAURL, config.Username, config.Password, true)
+	fetcher := auth.NewAPITokenFetcher(config.APIURL, config.Username, config.Password, true)
 	token, err := fetcher.FetchAuthToken()
 	if err != nil {
 		logger.Fatal("Unable to fetch token", err)
