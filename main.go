@@ -17,28 +17,28 @@ import (
 func main() {
 	logger := log.New(os.Stdout, ">>> ", 0)
 
-	config, err := config.Parse()
+	conf, err := config.Parse()
 	if err != nil {
 		logger.Fatal("Unable to build config from environment", err)
 	}
 
-	fetcher := auth.NewAPITokenFetcher(config.APIURL, config.Username, config.Password, true)
+	fetcher := auth.NewAPITokenFetcher(conf.APIURL, conf.Username, conf.Password, true)
 	token, err := fetcher.FetchAuthToken()
 	if err != nil {
 		logger.Fatal("Unable to fetch token", err)
 	}
 
-	consumer := consumer.New(config.TrafficControllerURL, &tls.Config{
-		InsecureSkipVerify: config.SkipSSL,
+	noaaConsumer := consumer.New(conf.TrafficControllerURL, &tls.Config{
+		InsecureSkipVerify: conf.SkipSSL,
 	}, nil)
-	events, errors := consumer.Firehose(config.FirehoseSubscriptionID, token)
+	events, errors := noaaConsumer.Firehose(conf.FirehoseSubscriptionID, token)
 
 	writerEventSerializer := writernozzle.NewWriterEventSerializer()
 	writerClient := writernozzle.NewWriterClient(os.Stdout)
-	logger.Printf("Forwarding events: %s", config.SelectedEvents)
+	logger.Printf("Forwarding events: %s", conf.SelectedEvents)
 	forwarder := nozzle.NewForwarder(
 		writerClient, writerEventSerializer,
-		config.SelectedEvents, events, errors, logger,
+		conf.SelectedEvents, events, errors, logger,
 	)
 	err = forwarder.Run(time.Second)
 	if err != nil {
