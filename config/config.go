@@ -15,7 +15,7 @@ type Config struct {
 	UAAURL                 string `envconfig:"uaa_url"`
 	Username               string `required:"true"`
 	Password               string `required:"true"`
-	TrafficControllerURL   string `required:"true" envconfig:"traffic_controller_url"`
+	TrafficControllerURL   string `envconfig:"traffic_controller_url"`
 	FirehoseSubscriptionID string `required:"true" envconfig:"firehose_subscription_id"`
 	SkipSSL                bool   `default:"false" envconfig:"skip_ssl"`
 

@@ -1,11 +1,11 @@
-package auth_test
+package uaa_test
 
 import (
 	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
 
-	. "github.com/cf-platform-eng/firehose-nozzle/auth"
+	. "github.com/cf-platform-eng/firehose-nozzle/uaa"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

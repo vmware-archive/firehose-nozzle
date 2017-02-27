@@ -1,6 +1,8 @@
-package auth
+package uaa
 
-import "github.com/cloudfoundry-incubator/uaago"
+import (
+	"github.com/cloudfoundry-incubator/uaago"
+)
 
 type uaaTokenFetcher struct {
 	uaaUrl   string
@@ -9,7 +11,11 @@ type uaaTokenFetcher struct {
 	skipSSL  bool
 }
 
-func NewUAATokenFetcher(url string, username string, password string, sslSkipVerify bool) *uaaTokenFetcher {
+type AuthTokenFetcher interface {
+	FetchAuthToken() (string, error)
+}
+
+func NewUAATokenFetcher(url string, username string, password string, sslSkipVerify bool) AuthTokenFetcher {
 	return &uaaTokenFetcher{
 		uaaUrl:   url,
 		username: username,
