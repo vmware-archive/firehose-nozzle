@@ -1,5 +1,9 @@
 ## Firehose Nozzle
 
+A minimal example for connecting to Cloud Foundry's
+[Loggregator](https://github.com/cloudfoundry/loggregator)
+system.
+
 ### Setup
 This code uses [Glide](https://glide.sh/) for dependency management.
 After you [install Glide](https://glide.sh/), run `glide install` to
@@ -7,42 +11,82 @@ install the Firehose Nozzle dependencies. After that, a `go install`
 should build and install the `firehose-nozzle` executable.
 
 There are two options for creating credentials that can talk to the API:
-* API users
+* UAA API user account (choose this route unless you have a reason not to)
 * UAA Client
 
-#### API User
+#### UAA API User Account
 
-todo
+Create a UAA user with access to the Firehose and Cloud Controller:
+
+* Install the UAA CLI, uaac.
+```
+gem install cf-uaac
+```
+
+* Use the uaac target uaa.YOUR-SYSTEM-DOMAIN command to target your UAA server.
+```
+uaac target uaa.sys.example.com
+```
+
+* Record the uaa:admin:client_secret from either
+    * The cf deployment manifest or
+    *  The Ops Manager UI, click on Pivotal Elastic Runtime tile, go to credentials tab, UAA -> Admin Client Credentials
+
+* Authenticate to UAA using the client_secret from the previous step
+```
+uaac token client get admin -s ADMIN-CLIENT-SECRET
+```
+
+* Create a Stackdriver Nozzle user with the password of your choosing.
+```
+uaac -t user add my-firehose-nozzle-user --password PASSWORD --emails na
+```
+
+* Add the user to the Cloud Controller Admin Read-Only group.
+```
+uaac -t member add cloud_controller.admin_read_only my-firehose-nozzle-user
+```
+
+* Add the user to the Doppler Firehose group.
+```
+uaac -t member add doppler.firehose my-firehose-nozzle-user
+```
+
 
 #### UAA Client
-The UAA client requires the scope `doppler.firehose`. One way to create this client
-is to add it via the
-[uaa.clients](https://github.com/cloudfoundry/uaa-release/blob/master/jobs/uaa/spec)
-property in the deployment manifest.
 
-For example:
+Create a UAA client with access to the Firehose and Cloud Controller:
 
+* Install the UAA CLI, uaac.
 ```
-properties:
-  uaa:
-    clients:
-      firehose-nozzle:
-        access-token-validity: 1209600
-        authorized-grant-types: authorization_code,client_credentials,refresh_token
-        override: true
-        secret: <password>
-        scope: openid,oauth.approvals,doppler.firehose
-        authorities: oauth.login,doppler.firehose
+gem install cf-uaac
 ```
 
-A simple way to add this to the deployment manifest is to use
-[BOSH CLI v2](https://bosh.io/docs/cli-v2.html) to apply the
-[provided opsfile](opsfiles/add-firehose-nozzle-user.yml) to your
-Cloud Foundry deployment with `-o path/to/add-firehose-nozzle-user.yml`.
-See the [cf-deployment repository](https://github.com/cloudfoundry/cf-deployment)
-for further information.
-Note these technologies are in active development, but we have
-successfully used this method.
+* Use the uaac target uaa.YOUR-SYSTEM-DOMAIN command to target your UAA server.
+```
+uaac target uaa.sys.example.com
+```
+
+* Record the uaa:admin:client_secret from either
+    * The cf deployment manifest or
+    *  The Ops Manager UI, click on Pivotal Elastic Runtime tile, go to credentials tab, UAA -> Admin Client Credentials
+
+* Authenticate to UAA using the client_secret from the previous step
+```
+uaac token client get admin -s ADMIN-CLIENT-SECRET
+```
+
+* Create a new UAA client for your firehose
+```
+uaac client add my-firehose-nozzle \
+    --access_token_validity 1209600 \
+    --authorized_grant_types authorization_code,client_credentials,refresh_token \
+    -s <SECRET> \
+    --scope openid,oauth.approvals,doppler.firehose \
+    --authorities oauth.login,doppler.firehose
+```
+
+For information about creating a UAA user, see the [Creating and Managing Users with the UAA CLI](http://docs.pivotal.io/pivotalcf/adminguide/uaa-user-management.html) topic.
 
 ### Development
 
