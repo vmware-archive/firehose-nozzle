@@ -44,10 +44,8 @@ var _ = Describe("config", func() {
 		Expect(err).NotTo(BeNil())
 		Expect(err.Error()).To(ContainSubstring(envName))
 	},
-		Entry("uaaUrl", "NOZZLE_UAA_URL"),
 		Entry("username", "NOZZLE_USERNAME"),
 		Entry("password", "NOZZLE_PASSWORD"),
-		Entry("trafficControllerUrl", "NOZZLE_TRAFFIC_CONTROLLER_URL"),
 		Entry("firehoseSubscriptionID", "NOZZLE_FIREHOSE_SUBSCRIPTION_ID"),
 	)
 

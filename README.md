@@ -105,7 +105,7 @@ go get github.com/onsi/gomega         # fetches the matcher library
 Run test
 from toplevel directory
 ```
-run ginkgo -r                          # runs test recursively
+run ginkgo -r  -skipPackage vendor/   # runs test recursively
 ```
 
 
