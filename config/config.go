@@ -18,6 +18,7 @@ type Config struct {
 	TrafficControllerURL   string `envconfig:"traffic_controller_url"`
 	FirehoseSubscriptionID string `required:"true" envconfig:"firehose_subscription_id"`
 	SkipSSL                bool   `default:"false" envconfig:"skip_ssl"`
+	ResolveAppMetaData     bool   `default:"false"   envconfig:"resolve_app_meta_data"`
 
 	SelectedEvents []events.Envelope_EventType `ignored:"true"`
 }

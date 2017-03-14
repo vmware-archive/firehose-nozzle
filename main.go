@@ -41,6 +41,9 @@ func main() {
 		if trafficControllerURL == "" {
 			logger.Fatal("trafficControllerURL from client was blank")
 		}
+		if conf.ResolveAppMetaData {
+			//do something clever
+		}
 	} else if conf.UAAURL != "" {
 		logger.Printf("Fetching auth token via UAA: %v\n", conf.UAAURL)
 

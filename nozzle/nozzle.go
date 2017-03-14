@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cloudfoundry/sonde-go/events"
+	"github.com/cloudfoundry-community/go-cfclient"
 )
 
 type Nozzle interface {
@@ -15,6 +16,7 @@ type Nozzle interface {
 type ForwardingNozzle struct {
 	client             Client
 	eventSerializer    EventSerializer
+	appFetcher 	   AppFetcher
 	includedEventTypes map[events.Envelope_EventType]bool
 	eventsChannel      <-chan *events.Envelope
 	errorsChannel      <-chan error
@@ -26,19 +28,24 @@ type Client interface {
 	PostBatch([]interface{}) error
 }
 
+type AppFetcher interface {
+	AppByGuid(guid string) (cfclient.App, error)
+}
+
 type EventSerializer interface {
-	BuildHttpStartStopEvent(event *events.Envelope) interface{}
-	BuildLogMessageEvent(event *events.Envelope) interface{}
+	BuildHttpStartStopEvent(event *events.Envelope, app *cfclient.App) interface{}
+	BuildLogMessageEvent(event *events.Envelope, app *cfclient.App) interface{}
 	BuildValueMetricEvent(event *events.Envelope) interface{}
 	BuildCounterEvent(event *events.Envelope) interface{}
 	BuildErrorEvent(event *events.Envelope) interface{}
-	BuildContainerEvent(event *events.Envelope) interface{}
+	BuildContainerEvent(event *events.Envelope, app *cfclient.App) interface{}
 }
 
-func NewForwarder(clientlient Client, eventSerializer EventSerializer, selectedEventTypes []events.Envelope_EventType, eventsChannel <-chan *events.Envelope, errors <-chan error, logger *log.Logger) Nozzle {
+func NewForwarder(clientlient Client, eventSerializer EventSerializer, appFetcher AppFetcher, selectedEventTypes []events.Envelope_EventType, eventsChannel <-chan *events.Envelope, errors <-chan error, logger *log.Logger) Nozzle {
 	nozzle := &ForwardingNozzle{
 		client:          clientlient,
 		eventSerializer: eventSerializer,
+		appFetcher:      appFetcher,
 		eventsChannel:   eventsChannel,
 		errorsChannel:   errors,
 		batch:           make([]interface{}, 0),
@@ -103,8 +110,11 @@ func (s *ForwardingNozzle) handleEvent(envelope *events.Envelope) {
 	case events.Envelope_HttpStart:
 	case events.Envelope_HttpStop:
 	case events.Envelope_HttpStartStop:
-		event = s.eventSerializer.BuildHttpStartStopEvent(envelope)
+		guid := envelope.GetHttpStartStop().GetApplicationId()
+		app, err := s.appFetcher.AppByGuid(guid)
+		event = s.eventSerializer.BuildHttpStartStopEvent(envelope, )
 	case events.Envelope_LogMessage:
+		guid := envelope.GetLogMessage().GetAppId()
 		event = s.eventSerializer.BuildLogMessageEvent(envelope)
 	case events.Envelope_ValueMetric:
 		event = s.eventSerializer.BuildValueMetricEvent(envelope)
@@ -113,6 +123,7 @@ func (s *ForwardingNozzle) handleEvent(envelope *events.Envelope) {
 	case events.Envelope_Error:
 		event = s.eventSerializer.BuildErrorEvent(envelope)
 	case events.Envelope_ContainerMetric:
+		guid := envelope.GetContainerMetric().GetApplicationId()
 		event = s.eventSerializer.BuildContainerEvent(envelope)
 	}
 
