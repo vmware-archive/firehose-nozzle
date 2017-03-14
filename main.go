@@ -28,10 +28,18 @@ func main() {
 	if conf.APIURL != "" {
 		logger.Printf("Fetching auth token via API: %v\n", conf.APIURL)
 
-		fetcher := api.NewAPITokenFetcher(conf.APIURL, conf.Username, conf.Password, conf.SkipSSL)
+		fetcher, err := api.NewAPIClient(conf.APIURL, conf.Username, conf.Password, conf.SkipSSL)
+		if err != nil {
+			logger.Fatal("Unable to build API client", err)
+		}
 		token, err = fetcher.FetchAuthToken()
 		if err != nil {
 			logger.Fatal("Unable to fetch token via API", err)
+		}
+
+		trafficControllerURL = fetcher.FetchTrafficControllerURL()
+		if trafficControllerURL == "" {
+			logger.Fatal("trafficControllerURL from client was blank")
 		}
 	} else if conf.UAAURL != "" {
 		logger.Printf("Fetching auth token via UAA: %v\n", conf.UAAURL)

@@ -11,11 +11,11 @@ type uaaTokenFetcher struct {
 	skipSSL  bool
 }
 
-type AuthTokenFetcher interface {
+type UAATokenFetcher interface {
 	FetchAuthToken() (string, error)
 }
 
-func NewUAATokenFetcher(url string, username string, password string, sslSkipVerify bool) AuthTokenFetcher {
+func NewUAATokenFetcher(url string, username string, password string, sslSkipVerify bool) UAATokenFetcher {
 	return &uaaTokenFetcher{
 		uaaUrl:   url,
 		username: username,

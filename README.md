@@ -92,16 +92,21 @@ For information about creating a UAA user, see the [Creating and Managing Users 
 
 For development against
 [bosh-lite](https://github.com/cloudfoundry/bosh-lite),
-copy `scripts/dev.sh.template` to `scripts/dev.sh.template` and supply missing values.
+copy `scripts/dev.sh.template` to `scripts/dev.sh` and supply missing values.
+Then run `./scripts/dev.sh` to see events on standard out.
 
-### Reminder/Todo
 
-- [ ] Timeouts connecting to firehose (had bosh-lite shut down & took ages to crash / stop)
-- [ ] Never able to generate `events.Envelope_Error` in real cf deploy
-- [ ] Vendor dependencies
+Setup Tests
+```
+go get github.com/onsi/ginkgo/ginkgo  # installs the ginkgo CLI
+go get github.com/onsi/gomega         # fetches the matcher library
 
-For release repo, add errand to setup uaa client, see:
-https://github.com/cloudfoundry-community/admin-ui-boshrelease/tree/master/jobs/register_admin_ui
+Run test
+from toplevel directory
+```
+run ginkgo -r                          # runs test recursively
+```
+
 
 ### References
 
