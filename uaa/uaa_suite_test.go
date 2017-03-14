@@ -1,4 +1,4 @@
-package auth_test
+package uaa_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestCfauth(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Auth Suite")
+	RunSpecs(t, "UAA Auth Suite")
 }
