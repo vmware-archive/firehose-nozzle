@@ -37,7 +37,7 @@ uaac target uaa.sys.example.com
 uaac token client get admin -s ADMIN-CLIENT-SECRET
 ```
 
-* Create a Stackdriver Nozzle user with the password of your choosing.
+* Create a Nozzle user for your app with the password of your choosing.
 ```
 uaac -t user add my-firehose-nozzle-user --password PASSWORD --emails na
 ```
