@@ -95,16 +95,20 @@ For development against
 copy `scripts/dev.sh.template` to `scripts/dev.sh` and supply missing values.
 Then run `./scripts/dev.sh` to see events on standard out.
 
+Install dependencies
+```bash
+glide install
+```
 
 Setup Tests
-```
+```bash
 go get github.com/onsi/ginkgo/ginkgo  # installs the ginkgo CLI
 go get github.com/onsi/gomega         # fetches the matcher library
 ```
 
 Run test
 from toplevel directory
-```
+```bash
 run ginkgo -r  -skipPackage vendor/   # runs test recursively
 ```
 
