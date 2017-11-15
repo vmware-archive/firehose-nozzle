@@ -46,8 +46,6 @@ func NewForwarder(clientlient Client, eventSerializer EventSerializer, selectedE
 	}
 
 	nozzle.includedEventTypes = map[events.Envelope_EventType]bool{
-		events.Envelope_HttpStart:       false,
-		events.Envelope_HttpStop:        false,
 		events.Envelope_HttpStartStop:   false,
 		events.Envelope_LogMessage:      false,
 		events.Envelope_ValueMetric:     false,
@@ -100,8 +98,6 @@ func (s *ForwardingNozzle) handleEvent(envelope *events.Envelope) {
 	}
 
 	switch eventType {
-	case events.Envelope_HttpStart:
-	case events.Envelope_HttpStop:
 	case events.Envelope_HttpStartStop:
 		event = s.eventSerializer.BuildHttpStartStopEvent(envelope)
 	case events.Envelope_LogMessage:
