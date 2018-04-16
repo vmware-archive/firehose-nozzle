@@ -10,11 +10,14 @@ After you [install Glide](https://glide.sh/), run `glide install` to
 install the Firehose Nozzle dependencies. After that, a `go install`
 should build and install the `firehose-nozzle` executable.
 
+Ensure that you have installed firehose-nozzle using `go get github.com/cf-platform-eng/firehose-nozzle`,
+this will put the dependent packages in the right place.
+
 There are two options for creating credentials that can talk to the API:
 * UAA API user account (choose this route unless you have a reason not to)
 * UAA Client
 
-#### UAA API User Account
+#### Option 1: UAA API User Account
 
 Create a UAA user with access to the Firehose and Cloud Controller:
 
@@ -53,7 +56,7 @@ uaac -t member add doppler.firehose my-firehose-nozzle-user
 ```
 
 
-#### UAA Client
+#### Option 2: UAA Client
 
 Create a UAA client with access to the Firehose and Cloud Controller:
 
