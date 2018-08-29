@@ -89,7 +89,9 @@ uaac client add my-firehose-nozzle \
     --authorities oauth.login,doppler.firehose
 ```
 
-For information about creating a UAA user, see the [Creating and Managing Users with the UAA CLI](http://docs.pivotal.io/pivotalcf/adminguide/uaa-user-management.html) topic.
+For information about creating a UAA user, see the
+[Creating and Managing Users with the UAA CLI](https://docs.pivotal.io/pivotalcf/uaa/uaa-user-management.html)
+topic.
 
 ### Development
 
